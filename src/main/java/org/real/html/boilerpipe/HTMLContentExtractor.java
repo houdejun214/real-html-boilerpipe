@@ -7,7 +7,6 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.regex.Pattern;
 
 import org.apache.xerces.parsers.AbstractSAXParser;
 import org.cyberneko.html.HTMLConfiguration;
@@ -25,17 +24,17 @@ import de.l3s.boilerpipe.sax.BoilerpipeSAXInput;
 import de.l3s.boilerpipe.sax.HTMLDocument;
 import de.l3s.boilerpipe.sax.HTMLFetcher;
 
-public final class HTMLContentExtractor {
+public final class HtmlContentExtractor {
 
 	/**
-	 * Creates a new {@link HTMLContentExtractor}, which is set-up to return only the
+	 * Creates a new {@link HtmlContentExtractor}, which is set-up to return only the
 	 * extracted HTML text, including enclosed markup.
 	 */
-	public static HTMLContentExtractor newExtractingInstance() {
-		return new HTMLContentExtractor(true);
+	public static HtmlContentExtractor newExtractingInstance() {
+		return new HtmlContentExtractor(true);
 	}
 
-	private HTMLContentExtractor(final boolean extractHTML) {
+	private HtmlContentExtractor(final boolean extractHTML) {
 	}
 
 	/**
@@ -225,7 +224,7 @@ public final class HTMLContentExtractor {
 					}
 					html = new HtmlElement(depth);
 					if(parent!=null && parent.isInclude()){
-						if(parent.getFoundInChildDepth() - html.getDepth()<=1){
+						if(parent.getFoundInChildDepth() - html.getDepth()<=2){
 							html.setInclude();
 							html.setFoundInChildDepth(parent.getFoundInChildDepth());
 						}
@@ -301,13 +300,13 @@ public final class HTMLContentExtractor {
 					return;
 				}
 				html.setFoundInCurrent(true);
-				if (highlight) {
-					//html.append(preHighlight);
-				}
+//				if (highlight) {
+//					//html.append(preHighlight);
+//				}
 				html.append(xmlEncode(String.valueOf(ch, start, length)));
-				if (highlight) {
-					//html.append(postHighlight);
-				}
+//				if (highlight) {
+//					//html.append(postHighlight);
+//				}
 			}
 		}
 

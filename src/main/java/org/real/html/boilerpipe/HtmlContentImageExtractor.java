@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jsoup.Jsoup;
@@ -27,14 +26,15 @@ import de.l3s.boilerpipe.sax.BoilerpipeSAXInput;
 public class HtmlContentImageExtractor {
 	
 	private static Set<String> ignoreFilesExtends = new HashSet<String>(Arrays.asList("gif","png"));
+	private static Set<String> imageFilesExtends = new HashSet<String>(Arrays.asList("jpg"));
 	
 	private HttpClient client = new HttpClient();
 
 	private ArticleExtractor extractor = ArticleExtractor.INSTANCE;
 	
-	private HTMLContentExtractor hh = HTMLContentExtractor.newExtractingInstance();
+	private HtmlContentExtractor hh = HtmlContentExtractor.newExtractingInstance();
 	
-	public List<String> getImages(String url) throws HttpException, IOException, BoilerpipeProcessingException, SAXException{
+	public List<String> getImages(String url) throws IOException, BoilerpipeProcessingException, SAXException{
 		HttpMethod get = new GetMethod(url);
 		List<String> imgLinks;
 		try {
@@ -53,7 +53,8 @@ public class HtmlContentImageExtractor {
 			if(imgs != null && imgs.size()>0){
 				for(Element img:imgs){
 					String src = img.attr("src");
-					if(!ignoreFilesExtends.contains(getExtension(src))){
+					String ext = getExtension(src);
+					if(!ignoreFilesExtends.contains(ext)){
 						imgLinks.add(src);
 					}
 				}
@@ -69,6 +70,10 @@ public class HtmlContentImageExtractor {
 		int extPos=fileName.lastIndexOf(".");
 		if(extPos<0){
 			return "";
+		}
+		int end = fileName.indexOf("?", extPos);
+		if(end>0){
+			return fileName.substring(extPos+1, end);
 		}
 		return fileName.substring(extPos+1);
 	}
