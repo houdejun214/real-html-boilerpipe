@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 
-import org.apache.commons.httpclient.HttpException;
 import org.xml.sax.SAXException;
 
 import de.l3s.boilerpipe.BoilerpipeExtractor;
@@ -13,7 +12,7 @@ import de.l3s.boilerpipe.extractors.CommonExtractors;
 
 public class App {
 
-	public static void main(String[] args) throws HttpException, IOException, BoilerpipeProcessingException, SAXException {
+	public static void main(String[] args) throws IOException, BoilerpipeProcessingException, SAXException {
 //		http://www.malaysia-chronicle.com/index.php?option=com_k2&view=item&id=130192:britain-says-i-do-to-gay-marriage&Itemid=4#axzz2jZcrhr6C
 //			http://justkhai.com/blog/ada-apa-dengan-kia-forte/
 //			http://www.melvister.com/2012/08/mercun-bola-paling-bahaya-di-musim-perayaan.html

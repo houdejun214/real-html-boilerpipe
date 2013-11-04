@@ -8,9 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -28,25 +31,27 @@ public class HtmlContentImageExtractor {
 	private static Set<String> ignoreFilesExtends = new HashSet<String>(Arrays.asList("gif","png"));
 	private static Set<String> imageFilesExtends = new HashSet<String>(Arrays.asList("jpg"));
 	
-	private HttpClient client = new HttpClient();
+	private CloseableHttpClient client = HttpClients.createDefault();
 
 	private ArticleExtractor extractor = ArticleExtractor.INSTANCE;
 	
 	private HtmlContentExtractor hh = HtmlContentExtractor.newExtractingInstance();
 	
 	public List<String> getImages(String url) throws IOException, BoilerpipeProcessingException, SAXException{
-		HttpMethod get = new GetMethod(url);
+		HttpGet get = new HttpGet(url);
+		get.addHeader("Connection", "close");
+		get.addHeader("User-Agent","Mozilla/5.0 (Windows; U; Windows NT 6.1; pl; rv:1.9.1) Gecko/20090624 Firefox/3.5 (.NET CLR 3.5.30729)");
+
+		CloseableHttpResponse response = client.execute(get);
 		try {
-			client.executeMethod(get);
-			String content = get.getResponseBodyAsString();
-			get.releaseConnection();
+			HttpEntity entity = response.getEntity();
+			String content = EntityUtils.toString(entity);
 			// parser document
 			List<String> imgLinks = getImagesByContent(content);
 			return imgLinks;
 		} finally {
-			get.releaseConnection();
+			response.close();
 		}
-		
 	}
 	
 	public List<String> getImagesByContent(String content) throws IOException, BoilerpipeProcessingException, SAXException{
