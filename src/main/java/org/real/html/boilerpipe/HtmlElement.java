@@ -6,22 +6,11 @@ public class HtmlElement {
 	
 	private int depth = 1;
 	
-//	/**
-//	 * indicate that found in directly child element
-//	 */
-//	private boolean foundInDChild = false;
-//	
-//	/**
-//	 * indicate that found in child elements
-//	 */
-//	private boolean foundInChild = false;
-	
 	private boolean foundInCurrent = false;
 	
 	private boolean include = false;
 	
 	private int foundInChildDepth = Integer.MAX_VALUE;
-	
 	
 	public HtmlElement(){
 		this.html = new StringBuilder();
@@ -45,23 +34,6 @@ public class HtmlElement {
 	public void append(HtmlElement html2) {
 		this.html.append(html2.html);
 	}
-
-//	public boolean isFoundInDChild() {
-//		return foundInDChild;
-//	}
-//
-//	public void setFoundInDChild() {
-//		this.foundInDChild = true;
-//		this.foundInChild = true;
-//	}
-//
-//	public boolean isFoundInChild() {
-//		return foundInChild;
-//	}
-//
-//	public void setFoundInChild() {
-//		this.foundInChild = true;
-//	}
 
 	public boolean isFoundInCurrent() {
 		return foundInCurrent;
@@ -97,6 +69,4 @@ public class HtmlElement {
 	public String toString() {
 		return html.toString();
 	}
-
-	
 }
