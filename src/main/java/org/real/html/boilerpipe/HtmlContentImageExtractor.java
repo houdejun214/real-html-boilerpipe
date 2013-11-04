@@ -36,34 +36,40 @@ public class HtmlContentImageExtractor {
 	
 	public List<String> getImages(String url) throws IOException, BoilerpipeProcessingException, SAXException{
 		HttpMethod get = new GetMethod(url);
-		List<String> imgLinks;
 		try {
 			client.executeMethod(get);
 			String content = get.getResponseBodyAsString();
 			get.releaseConnection();
 			// parser document
-			TextDocument textDoc = new BoilerpipeSAXInput(new InputSource(new StringReader(content))).getTextDocument();
-			extractor.process(textDoc);
-			InputSource htmlDoc = new InputSource(new StringReader(content));
-			String mainContent = hh.process(textDoc, htmlDoc);
-			
-			Document doc = Jsoup.parse(mainContent);
-			Elements imgs = doc.select("img");
-			imgLinks = new ArrayList<String>();
-			if(imgs != null && imgs.size()>0){
-				for(Element img:imgs){
-					String src = img.attr("src");
-					String ext = getExtension(src);
-					if(!ignoreFilesExtends.contains(ext)){
-						imgLinks.add(src);
-					}
-				}
-			}
+			List<String> imgLinks = getImagesByContent(content);
 			return imgLinks;
 		} finally {
 			get.releaseConnection();
 		}
 		
+	}
+	
+	public List<String> getImagesByContent(String content) throws IOException, BoilerpipeProcessingException, SAXException{
+		List<String> imgLinks;
+		// parser document
+		TextDocument textDoc = new BoilerpipeSAXInput(new InputSource(new StringReader(content))).getTextDocument();
+		extractor.process(textDoc);
+		InputSource htmlDoc = new InputSource(new StringReader(content));
+		String mainContent = hh.process(textDoc, htmlDoc);
+		
+		Document doc = Jsoup.parse(mainContent);
+		Elements imgs = doc.select("img");
+		imgLinks = new ArrayList<String>();
+		if(imgs != null && imgs.size()>0){
+			for(Element img:imgs){
+				String src = img.attr("src");
+				String ext = getExtension(src);
+				if(!ignoreFilesExtends.contains(ext)){
+					imgLinks.add(src);
+				}
+			}
+		}
+		return imgLinks;
 	}
 	
 	public static String getExtension(String fileName){

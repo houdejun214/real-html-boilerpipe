@@ -224,7 +224,7 @@ public final class HtmlContentExtractor {
 					}
 					html = new HtmlElement(depth);
 					if(parent!=null && parent.isInclude()){
-						if(parent.getFoundInChildDepth() - html.getDepth()<=2){
+						if(parent.getFoundInChildDepth() - html.getDepth()<=3){
 							html.setInclude();
 							html.setFoundInChildDepth(parent.getFoundInChildDepth());
 						}
