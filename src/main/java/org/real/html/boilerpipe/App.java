@@ -1,25 +1,15 @@
 package org.real.html.boilerpipe;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.PrintWriter;
+import java.net.URL;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import de.l3s.boilerpipe.BoilerpipeExtractor;
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
-import de.l3s.boilerpipe.document.TextDocument;
-import de.l3s.boilerpipe.extractors.ArticleExtractor;
-import de.l3s.boilerpipe.sax.BoilerpipeSAXInput;
+import de.l3s.boilerpipe.extractors.CommonExtractors;
 
 public class App {
 
@@ -51,27 +41,24 @@ public class App {
 //			System.out.println("have no images");
 //		}
 		
-//		URL url = new URL(
-//                "http://www.lollipop.sg/content/new-face-runner-had-change-surname-because-fugitive-lawyer-father"
-//        );
+		URL uri = new URL( url );
 //
-//		final BoilerpipeExtractor extractor = CommonExtractors.ARTICLE_EXTRACTOR;
-//		
-//		final HTMLContentExtractor hh = HTMLContentExtractor.newExtractingInstance();
-//		
-//		String fileName = "/home/houdejun/highlighted.html";
-//		PrintWriter out = new PrintWriter(fileName, "UTF-8");
-//		out.println("<base href=\"" + url + "\" >");
-//		out.println("<meta http-equiv=\"Content-Type\" content=\"text-html; charset=utf-8\" />");
-//		out.println(hh.process(url, extractor));
-//		out.close();
-//		openFile(fileName);
+		final BoilerpipeExtractor extractor = CommonExtractors.ARTICLE_EXTRACTOR;
 		
-		HtmlContentImageExtractor extractor = new HtmlContentImageExtractor();
-		List<String> images = extractor.getImages(url);
-		for(String link:images){
-			System.out.println(link);
-		}
+		final HTMLContentExtractor hh = HTMLContentExtractor.newExtractingInstance();
+		String fileName = "/home/houdejun/highlighted.html";
+		PrintWriter out = new PrintWriter(fileName, "UTF-8");
+		out.println("<base href=\"" + url + "\" >");
+		out.println("<meta http-equiv=\"Content-Type\" content=\"text-html; charset=utf-8\" />");
+		out.println(hh.process(uri, extractor));
+		out.close();
+		openFile(fileName);
+		
+//		HtmlContentImageExtractor extractor = new HtmlContentImageExtractor();
+//		List<String> images = extractor.getImages(url);
+//		for(String link:images){
+//			System.out.println(link);
+//		}
 	}
 	
 	private static void openFile(String file){
