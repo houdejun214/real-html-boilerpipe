@@ -1,6 +1,7 @@
 package org.real.html.boilerpipe.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -105,8 +106,16 @@ public class ImageFilesDownloader {
 			URL url = new URL(imgageURL);
 			URLConnection connect = url.openConnection();
 			connect.addRequestProperty("User-Agent", "Chrome/28.0.1500.72");
-			return IOUtils.toByteArray(connect.getInputStream());
+			InputStream inputStream = null;
+			try {
+				inputStream = connect.getInputStream();
+				byte[] byteArray = IOUtils.toByteArray(inputStream);
+				return byteArray;
+			} finally{
+				if(inputStream!=null){
+					IOUtils.closeQuietly(inputStream);
+				}
+			}
 		}
-
 	}
 }
