@@ -4,9 +4,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class ImageFilesDownloaderTest {
+	
+	private ImageFilesDownloader downloader = null;
+	
+	@Before
+	public void setup(){
+		downloader = new ImageFilesDownloader();
+	}
 
 	@Test
 	public void test() {
@@ -31,7 +39,7 @@ public class ImageFilesDownloaderTest {
 				"http://www.lollipop.sg/sites/all/themes/lollipop/images/moodmeter_45x55_omg.jpg",
 				"http://www.lollipop.sg/sites/all/themes/lollipop//images/sharemood_fb.jpg",
 				"http://www.lollipop.sg/sites/all/themes/lollipop//images/sharemood_t.jpg");
-		Map<String, byte[]> downloads = ImageFilesDownloader.download(images);
+		Map<String, byte[]> downloads = downloader.download(images);
 		System.out.println(downloads.size());
 	}
 
@@ -58,7 +66,7 @@ public class ImageFilesDownloaderTest {
 				"http://www.lollipop.sg/sites/all/themes/lollipop/images/moodmeter_45x55_omg.jpg",
 				"http://www.lollipop.sg/sites/all/themes/lollipop//images/sharemood_fb.jpg",
 				"http://www.lollipop.sg/sites/all/themes/lollipop//images/sharemood_t.jpg");
-		Map<String, byte[]> downloads = ImageFilesDownloader.downloadLinear(images);
+		Map<String, byte[]> downloads = downloader.downloadLinear(images);
 		System.out.println(downloads.size());
 	}
 }

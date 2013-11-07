@@ -20,10 +20,16 @@ import org.apache.commons.io.IOUtils;
 public class ImageFilesDownloader {
 	
 	private static final int POOLED_THREAD_N = 3;
-	private static ExecutorService downloadExecutor;
+	private ExecutorService downloadExecutor;
 	
-	static {
-		downloadExecutor = Executors.newFixedThreadPool(POOLED_THREAD_N);
+	public ImageFilesDownloader(ExecutorService downloadExecutor) {
+		this.downloadExecutor = downloadExecutor;
+	}
+	public ImageFilesDownloader(int number) {
+		this.downloadExecutor = Executors.newFixedThreadPool(number);
+	}
+	public ImageFilesDownloader() {
+		this.downloadExecutor = Executors.newFixedThreadPool(POOLED_THREAD_N);
 	}
 
 	/**
@@ -32,7 +38,7 @@ public class ImageFilesDownloader {
 	 * @param images
 	 * @return
 	 */
-	public static Map<String, byte[]> download(List<String> images){
+	public  Map<String, byte[]> download(List<String> images){
 		Map<String,byte[]> result = new HashMap<String,byte[]>();
 		if(images!=null && images.size()>0){
 			CountDownLatch lock = new CountDownLatch(images.size());
@@ -55,7 +61,7 @@ public class ImageFilesDownloader {
 	 * @param images
 	 * @return
 	 */
-	public static Map<String, byte[]> downloadLinear(List<String> images){
+	public Map<String, byte[]> downloadLinear(List<String> images){
 		Map<String,byte[]> result = new HashMap<String,byte[]>();
 		if(images!=null && images.size()>0){
 			for(String img:images){
