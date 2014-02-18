@@ -154,6 +154,8 @@ public final class HtmlContentExtractor {
 	private final class Implementation extends AbstractSAXParser implements
 			ContentHandler {
 		HtmlElement html = null;
+		
+		private static final int TOLERATE_DEPTH = 3;
 
 		private int inIgnorableElement = 0;
 		private int characterElementIdx = 0;
@@ -223,10 +225,11 @@ public final class HtmlContentExtractor {
 						depth = parent.getDepth()+1;
 					}
 					html = new HtmlElement(depth);
-					if(parent!=null && parent.isInclude()){
-						if(parent.getFoundInChildDepth() - html.getDepth()<=3){
+					HtmlElement latestFoundParent = getLatestFoundParent();
+					if(latestFoundParent!=null && latestFoundParent.isInclude()){
+						if(latestFoundParent.getFoundInChildDepth() - html.getDepth()<=TOLERATE_DEPTH){
 							html.setInclude();
-							html.setFoundInChildDepth(parent.getFoundInChildDepth());
+							html.setFoundInChildDepth(latestFoundParent.getFoundInChildDepth());
 						}
 					}
 					/***************************************/
@@ -252,7 +255,7 @@ public final class HtmlContentExtractor {
 				}
 			}
 		}
-
+		
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
 			TagAction ta = TAG_ACTIONS.get(localName);
@@ -273,6 +276,7 @@ public final class HtmlContentExtractor {
 							parent.append(html);
 							parent.setInclude();
 							parent.setFoundInChildDepth(html.getDepth());
+							updateParents(html.getDepth());
 						}else if(html.isInclude()){
 							parent.append(html);
 							parent.setInclude();
@@ -287,6 +291,27 @@ public final class HtmlContentExtractor {
 				}
 			}
 			
+		}
+		
+		private HtmlElement getLatestFoundParent(){
+			int size = this.stack.size();
+			for(int i=size-1;i>=size-1-TOLERATE_DEPTH && i>=0;i--){
+				HtmlElement el = this.stack.get(i);
+				if(el.isInclude()){
+					return el;
+				}
+			}
+			return null;
+		}
+		
+		private void updateParents(int foundDepth){
+			int size = this.stack.size();
+			for(int i=size-1;i>=0;i--){
+				HtmlElement el = this.stack.get(i);
+				if(el.getFoundInChildDepth()>foundDepth){
+					el.setFoundInChildDepth(foundDepth);
+				}
+			}
 		}
 
 		public void characters(char[] ch, int start, int length)

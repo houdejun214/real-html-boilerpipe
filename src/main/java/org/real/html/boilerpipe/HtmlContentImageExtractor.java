@@ -47,14 +47,14 @@ public class HtmlContentImageExtractor {
 			HttpEntity entity = response.getEntity();
 			String content = EntityUtils.toString(entity);
 			// parser document
-			List<String> imgLinks = getImagesByContent(content);
+			List<String> imgLinks = getImagesByContent(content,url);
 			return imgLinks;
 		} finally {
 			response.close();
 		}
 	}
 	
-	public List<String> getImagesByContent(String content) throws IOException, BoilerpipeProcessingException, SAXException{
+	public List<String> getImagesByContent(String content,String baseUrl) throws IOException, BoilerpipeProcessingException, SAXException{
 		List<String> imgLinks;
 		// parser document
 		TextDocument textDoc = new BoilerpipeSAXInput(new InputSource(new StringReader(content))).getTextDocument();
@@ -62,12 +62,12 @@ public class HtmlContentImageExtractor {
 		InputSource htmlDoc = new InputSource(new StringReader(content));
 		String mainContent = hh.process(textDoc, htmlDoc);
 		
-		Document doc = Jsoup.parse(mainContent);
+		Document doc = Jsoup.parse(mainContent,baseUrl);
 		Elements imgs = doc.select("img");
 		imgLinks = new ArrayList<String>();
 		if(imgs != null && imgs.size()>0){
 			for(Element img:imgs){
-				String src = img.attr("src");
+				String src = img.absUrl("src");
 				String ext = getExtension(src);
 				if(!ignoreFilesExtends.contains(ext)){
 					imgLinks.add(src);
