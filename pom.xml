@@ -4,7 +4,7 @@
 
 	<groupId>org.real</groupId>
 	<artifactId>real-html-boilerpipe</artifactId>
-	<version>0.0.1-snapshorts02</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>real-html-test</name>
@@ -24,15 +24,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--maven variable which points to your local repository -->
-		<internal.repo.path>file:///Users/houdejun/Documents/working/next-working/mvn-repo</internal.repo.path>
+		<internal.repo.path>file:///home/houdejun/working/mvn-repo</internal.repo.path>
 	</properties>
-	<distributionManagement>
-		<repository>
-			<id>internal.repo</id>
-			<name>Internal Repository</name>
-			<url>${internal.repo.path}</url>
-		</repository>
-	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -78,6 +72,13 @@
 			<version>2.4</version>
 		</dependency>
 	</dependencies>
+	<distributionManagement>
+		<repository>
+			<id>internal.repo</id>
+			<name>Internal Repository</name>
+			<url>${internal.repo.path}</url>
+		</repository>
+	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
