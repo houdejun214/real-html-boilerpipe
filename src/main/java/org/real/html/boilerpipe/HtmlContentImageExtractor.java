@@ -47,31 +47,47 @@ public class HtmlContentImageExtractor {
 		return imgLinks;
 	}
 	
-	private String downloadWebContent(String url) throws ParseException, IOException{
+	private String downloadWebContent(String url) throws ParseException, IOException {
+		CloseableHttpResponse response = null;
+		try {
+			response = requestWebContent(url);
+			int i=0;
+			while(i<3 && response!=null){
+				int statusCode = response.getStatusLine().getStatusCode();
+				if (statusCode != HttpStatus.SC_OK) {
+					if (statusCode != HttpStatus.SC_NOT_FOUND) {
+						if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
+							Header sheader = response.getFirstHeader("Location");
+							if (sheader != null) {
+								String redictUrl = sheader.getValue();
+								redictUrl = URLCanonicalizer.getCanonicalURL(redictUrl, url);
+								response.close();
+								i++;
+								response =  requestWebContent(redictUrl);
+								continue;
+							} 
+						}
+					}
+				}
+				HttpEntity entity = response.getEntity();
+				String content = EntityUtils.toString(entity);
+				return content;
+			}
+			return "";
+		} finally {
+			if(response!=null){
+				response.close();
+			}
+		}
+	}
+
+	private CloseableHttpResponse requestWebContent(String url) throws ParseException, IOException{
+		System.out.println("download page:"+url);
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Connection", "close");
 		get.addHeader("User-Agent","Mozilla/5.0 (Windows; U; Windows NT 6.1; pl; rv:1.9.1) Gecko/20090624 Firefox/3.5 (.NET CLR 3.5.30729)");
 		CloseableHttpResponse response = client.execute(get);
-		try {
-			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode != HttpStatus.SC_OK) {
-				if (statusCode != HttpStatus.SC_NOT_FOUND) {
-					if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
-						Header sheader = response.getFirstHeader("Location");
-						if (sheader != null) {
-							String redictUrl = sheader.getValue();
-							redictUrl = URLCanonicalizer.getCanonicalURL(redictUrl, url);
-							return downloadWebContent(redictUrl);
-						} 
-					}
-				}
-			}
-			HttpEntity entity = response.getEntity();
-			String content = EntityUtils.toString(entity);
-			return content;
-		} finally {
-			response.close();
-		}
+		return response;
 	}
 	
 	public Collection<String> getImagesByContent(String content,String baseUrl) throws IOException, BoilerpipeProcessingException, SAXException{

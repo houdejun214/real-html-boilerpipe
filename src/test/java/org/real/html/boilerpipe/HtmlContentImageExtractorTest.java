@@ -1,13 +1,9 @@
 package org.real.html.boilerpipe;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 import org.real.html.boilerpipe.util.StringUtils;
@@ -88,6 +84,7 @@ public class HtmlContentImageExtractorTest {
 		};
 		for(String url:urls){
 			Collection<String> images = extractor.getImages(url);
+			System.out.print("\t"+images.size()+":");
 			if(images.size()<=0){
 				System.out.println("["+url+"] can not be extract");
 			}else{
@@ -101,6 +98,21 @@ public class HtmlContentImageExtractorTest {
 		String[] urls = new String[]{
 				"http://www.scmp.com/news/china/article/1430102/i-thought-it-was-home-depot-pot-painter-charged-smashing-museums-us1m-ai",
 				"http://www.scmp.com/news/hong-kong/article/1429896/hong-kong-children-happier-less-able-handle-adversity-survey-finds",
+		};
+		for(String url:urls){
+			Collection<String> images = extractor.getImages(url);
+			if(images.size()<=0){
+				System.out.println("["+url+"] can not be extract");
+			}else{
+				System.out.println(StringUtils.join(images, ","));
+			}
+		}
+	}
+	
+	@Test
+	public void testCaseTaobao() throws IOException, BoilerpipeProcessingException, SAXException {
+		String[] urls = new String[]{
+				"http://item.taobao.com/item.htm?id=37022645349&ali_trackid=2:mm_15890324_2192376_11153435,0:1392705944_6k3_516481380&clk1=eb4f7d28cd2a3882f56db91eee0a36d6&spm=a3300.2168033.5636241.5.IRO46g",
 		};
 		for(String url:urls){
 			Collection<String> images = extractor.getImages(url);
