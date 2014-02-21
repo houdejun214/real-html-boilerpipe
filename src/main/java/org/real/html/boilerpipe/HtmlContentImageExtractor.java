@@ -2,10 +2,13 @@ package org.real.html.boilerpipe;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.http.Header;
@@ -26,9 +29,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
+import de.l3s.boilerpipe.document.Image;
 import de.l3s.boilerpipe.document.TextDocument;
 import de.l3s.boilerpipe.extractors.ArticleExtractor;
 import de.l3s.boilerpipe.sax.BoilerpipeSAXInput;
+import de.l3s.boilerpipe.sax.ImageExtractor;
 
 public class HtmlContentImageExtractor {
 	
@@ -39,6 +44,8 @@ public class HtmlContentImageExtractor {
 	private ArticleExtractor extractor = ArticleExtractor.INSTANCE;
 	
 	private HtmlContentExtractor hh = HtmlContentExtractor.newExtractingInstance();
+	
+	private ImageExtractor imageExtractor = ImageExtractor.INSTANCE;
 	
 	public Collection<String> getImages(String url) throws IOException, BoilerpipeProcessingException, SAXException{
 		String content = downloadWebContent(url);
@@ -96,22 +103,22 @@ public class HtmlContentImageExtractor {
 		TextDocument textDoc = new BoilerpipeSAXInput(new InputSource(new StringReader(content))).getTextDocument();
 		extractor.process(textDoc);
 		InputSource htmlDoc = new InputSource(new StringReader(content));
-		String mainContent = hh.process(textDoc, htmlDoc);
 		
-		// find images from SEO meta properties.
-		Document doc = Jsoup.parse(content,baseUrl);
-		Element imageProp = doc.select("meta[property=og:image]").first();
-		if(imageProp!=null){
-			String src = imageProp.attr("content");
-			if(src!=null && !src.equals("")){
-				String ext = getExtension(src);
-				if(!ignoreFilesExtends.contains(ext)){
-					imgLinks.add(src);
+		List<Image> images = imageExtractor.process(textDoc, htmlDoc);
+		if(images!=null){
+			for(Image img:images){
+				String src = img.getSrc();
+				src = absUrl(src,baseUrl);
+				if(src!=null && !src.equals("")){
+					String ext = getExtension(src);
+					if(!ignoreFilesExtends.contains(ext)){
+						imgLinks.add(src);
+					}
 				}
 			}
 		}
-		
 		// find images from main content panel
+		String mainContent = hh.process(textDoc, content);
 		Document mainContentDoc = Jsoup.parse(mainContent,baseUrl);
 		Elements imgs = mainContentDoc.select("img");
 		if(imgs != null && imgs.size()>0){
@@ -130,9 +137,29 @@ public class HtmlContentImageExtractor {
 			}
 		}
 		
-		
 		return imgLinks;
 	}
+	
+	public String absUrl(String relUrl,String baseUri) {
+        URL base;
+        try {
+            try {
+                base = new URL(baseUri);
+            } catch (MalformedURLException e) {
+                // the base is unsuitable, but the attribute may be abs on its own, so try that
+                URL abs = new URL(relUrl);
+                return abs.toExternalForm();
+            }
+            // workaround: java resolves '//path/file + ?foo' to '//path/?foo', not '//path/file?foo' as desired
+            if (relUrl.startsWith("?"))
+                relUrl = base.getPath() + relUrl;
+            URL abs = new URL(base, relUrl);
+            return abs.toExternalForm();
+        } catch (MalformedURLException e) {
+            return "";
+        }
+    }
+
 	
 	public static String getExtension(String fileName){
 		int extPos=fileName.lastIndexOf(".");

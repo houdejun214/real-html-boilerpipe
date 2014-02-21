@@ -11,8 +11,13 @@
 	<url>http://maven.apache.org</url>
 	<repositories>
 		<repository>
-			<id>boilerpipe</id>
-			<url>http://boilerpipe.googlecode.com/svn/repo/</url>
+			<id>dj.mvn.repo</id>
+			<name>dj.mvn.repo</name>
+			<url>https://github.com/houdejun214/mvn-repo/raw/master</url>
+			<!-- use snapshot version -->
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 		<repository>
 			<id>thirdparty-releases</id>
@@ -37,7 +42,7 @@
 		<dependency>
 			<groupId>de.l3s.boilerpipe</groupId>
 			<artifactId>boilerpipe</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.0-u01</version>
 		</dependency>
 		<!-- jsoup HTML parser library @ http://jsoup.org/ -->
 		<dependency>

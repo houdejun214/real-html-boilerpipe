@@ -22,8 +22,6 @@ public class HtmlContentImageExtractorTest {
 		assertEquals("jpg", HtmlContentImageExtractor.getExtension("http://sinag.com/1111.jpg?p=123"));
 	}
 	
-	
-	@Test
 	public void testCase() throws IOException, BoilerpipeProcessingException, SAXException {
 		String[] urls = new String[]{
 				"http://staging.innity-asia.com/m4/rnd/visenze/index.html",
@@ -98,6 +96,7 @@ public class HtmlContentImageExtractorTest {
 		String[] urls = new String[]{
 				"http://www.scmp.com/news/china/article/1430102/i-thought-it-was-home-depot-pot-painter-charged-smashing-museums-us1m-ai",
 				"http://www.scmp.com/news/hong-kong/article/1429896/hong-kong-children-happier-less-able-handle-adversity-survey-finds",
+				"http://en.wikipedia.org/wiki/File:DAF_2600_truck_-_220505.jpg"
 		};
 		for(String url:urls){
 			Collection<String> images = extractor.getImages(url);
@@ -116,6 +115,23 @@ public class HtmlContentImageExtractorTest {
 		};
 		for(String url:urls){
 			Collection<String> images = extractor.getImages(url);
+			System.out.print("\t"+images.size()+":");
+			if(images.size()<=0){
+				System.out.println("["+url+"] can not be extract");
+			}else{
+				System.out.println(StringUtils.join(images, ","));
+			}
+		}
+	}
+	
+	@Test
+	public void testCase2() throws IOException, BoilerpipeProcessingException, SAXException {
+		String[] urls = new String[]{
+				"http://clozette.glam.jp/community/browse/5e995821db274dc4a05b18bf68b53350/GlamClozette",
+		};
+		for(String url:urls){
+			Collection<String> images = extractor.getImages(url);
+			System.out.print("\t"+images.size()+":");
 			if(images.size()<=0){
 				System.out.println("["+url+"] can not be extract");
 			}else{
