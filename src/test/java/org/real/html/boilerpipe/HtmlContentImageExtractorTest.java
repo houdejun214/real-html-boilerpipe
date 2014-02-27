@@ -1,9 +1,14 @@
 package org.real.html.boilerpipe;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.real.html.boilerpipe.util.StringUtils;
@@ -21,7 +26,6 @@ public class HtmlContentImageExtractorTest {
 		assertEquals("jpg", HtmlContentImageExtractor.getExtension(fileName));
 		assertEquals("jpg", HtmlContentImageExtractor.getExtension("http://sinag.com/1111.jpg?p=123"));
 	}
-	
 	public void testCase() throws IOException, BoilerpipeProcessingException, SAXException {
 		String[] urls = new String[]{
 				"http://staging.innity-asia.com/m4/rnd/visenze/index.html",
@@ -100,6 +104,7 @@ public class HtmlContentImageExtractorTest {
 		};
 		for(String url:urls){
 			Collection<String> images = extractor.getImages(url);
+			System.out.print("\t"+images.size()+":");
 			if(images.size()<=0){
 				System.out.println("["+url+"] can not be extract");
 			}else{
@@ -129,8 +134,60 @@ public class HtmlContentImageExtractorTest {
 		String[] urls = new String[]{
 				"http://clozette.glam.jp/community/browse/5e995821db274dc4a05b18bf68b53350/GlamClozette",
 		};
+
+		String[] imgUrls = new String[]{
+				"http://jpclo-prod-us.s3.amazonaws.com/cbbe29deb7834804ad322bba1e59ef95/640_5e995821db274dc4a05b18bf68b53350.jpg"
+		};
+		
 		for(String url:urls){
 			Collection<String> images = extractor.getImages(url);
+			HashSet<String> imgSet = new HashSet<String>(images);
+			assertTrue(imgSet.containsAll(Arrays.asList(imgUrls)));
+			System.out.print("\t"+images.size()+":");
+			if(images.size()<=0){
+				System.out.println("["+url+"] can not be extract");
+			}else{
+				System.out.println(StringUtils.join(images, ","));
+			}
+		}
+	}
+	
+	@Test
+	public void testCase3() throws IOException, BoilerpipeProcessingException, SAXException {
+		String[] urls = new String[]{
+				"http://www.thestar.com.my/Lifestyle/Entertainment/Music/2014/02/25/Dreamtime-with-Zee-Avis-lullaby-album/",
+		};
+		
+		String[] imgUrls = new String[]{
+				"http://www.thestar.com.my/~/media/Images/TSOL/Photos-Gallery/ForOnline/2014/02/25/str2_dl_dlzeekid_a_5col.ashx?w=620&h=413&crop=1&"
+		};
+		
+		for(String url:urls){
+			Collection<String> images = extractor.getImages(url);
+			HashSet<String> imgSet = new HashSet<String>(images);
+			assertTrue(imgSet.containsAll(Arrays.asList(imgUrls)));
+			System.out.print("\t"+images.size()+":");
+			if(images.size()<=0){
+				System.out.println("["+url+"] can not be extract");
+			}else{
+				System.out.println(StringUtils.join(images, ","));
+			}
+		}
+	}
+	
+	@Test
+	public void testCase4() throws IOException, BoilerpipeProcessingException, SAXException {
+		String[] urls = new String[]{
+				"http://www.thestar.com.my/Sport/Badminton/2014/02/24/Mak-dont-count-Heeim-out/",
+		};
+		String[] imgUrls = new String[]{
+				"http://www.thestar.com.my/~/media/Images/TSOL/Photos-Upload/From DCX/2014/02/24/doc6e5iirk986vrewe9fow.ashx?w=620&h=413&crop=1&"
+		};
+		
+		for(String url:urls){
+			Collection<String> images = extractor.getImages(url);
+			HashSet<String> imgSet = new HashSet<String>(images);
+			assertTrue(imgSet.containsAll(Arrays.asList(imgUrls)));
 			System.out.print("\t"+images.size()+":");
 			if(images.size()<=0){
 				System.out.println("["+url+"] can not be extract");

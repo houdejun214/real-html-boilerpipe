@@ -28,10 +28,12 @@ import org.real.html.boilerpipe.util.URLCanonicalizer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import de.l3s.boilerpipe.BoilerpipeExtractor;
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import de.l3s.boilerpipe.document.Image;
 import de.l3s.boilerpipe.document.TextDocument;
 import de.l3s.boilerpipe.extractors.ArticleExtractor;
+import de.l3s.boilerpipe.extractors.CommonExtractors;
 import de.l3s.boilerpipe.sax.BoilerpipeSAXInput;
 import de.l3s.boilerpipe.sax.ImageExtractor;
 
@@ -41,7 +43,9 @@ public class HtmlContentImageExtractor {
 	
 	private CloseableHttpClient client = HttpClients.createDefault();
 
-	private ArticleExtractor extractor = ArticleExtractor.INSTANCE;
+	private ArticleExtractor extractor = CommonExtractors.ARTICLE_EXTRACTOR;
+	
+	private BoilerpipeExtractor canolaExtractor = CommonExtractors.CANOLA_EXTRACTOR;
 	
 	private HtmlContentExtractor hh = HtmlContentExtractor.newExtractingInstance();
 	
@@ -100,11 +104,16 @@ public class HtmlContentImageExtractor {
 	public Collection<String> getImagesByContent(String content,String baseUrl) throws IOException, BoilerpipeProcessingException, SAXException{
 		Set<String> imgLinks = new LinkedHashSet<String>();
 		// parser document
-		TextDocument textDoc = new BoilerpipeSAXInput(new InputSource(new StringReader(content))).getTextDocument();
-		extractor.process(textDoc);
-		InputSource htmlDoc = new InputSource(new StringReader(content));
-		
-		List<Image> images = imageExtractor.process(textDoc, htmlDoc);
+		InputSource source = new InputSource(new StringReader(content));
+		TextDocument textDoc = new BoilerpipeSAXInput(source).getTextDocument();
+		canolaExtractor.process(textDoc);
+		source.getCharacterStream().reset();
+		List<Image> images = imageExtractor.process(textDoc, source);
+		if(images==null || images.size()==0){
+			extractor.process(textDoc);
+			source.getCharacterStream().reset();
+			images = imageExtractor.process(textDoc, source);
+		}
 		if(images!=null){
 			for(Image img:images){
 				String src = img.getSrc();
@@ -117,13 +126,17 @@ public class HtmlContentImageExtractor {
 				}
 			}
 		}
+		
 		// find images from main content panel
 		String mainContent = hh.process(textDoc, content);
 		Document mainContentDoc = Jsoup.parse(mainContent,baseUrl);
 		Elements imgs = mainContentDoc.select("img");
 		if(imgs != null && imgs.size()>0){
 			for(Element img:imgs){
-				String src = img.absUrl("src");
+				String src = img.attr("src");
+				if(src!=null && !src.equals("")){
+					src = absUrl(src,baseUrl);
+				}
 				if(src==null || src.equals("")){
 					// for some lazy-load images
 					src = img.absUrl("data-original");

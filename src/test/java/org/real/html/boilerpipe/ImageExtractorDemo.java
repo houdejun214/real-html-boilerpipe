@@ -15,9 +15,9 @@ public final class ImageExtractorDemo {
 				"http://clozette.glam.jp/community/browse/5e995821db274dc4a05b18bf68b53350/GlamClozette");
 		
 		// choose from a set of useful BoilerpipeExtractors...
-		final BoilerpipeExtractor extractor = CommonExtractors.ARTICLE_EXTRACTOR;
+//		final BoilerpipeExtractor extractor = CommonExtractors.ARTICLE_EXTRACTOR;
 //		final BoilerpipeExtractor extractor = CommonExtractors.DEFAULT_EXTRACTOR;
-//		final BoilerpipeExtractor extractor = CommonExtractors.CANOLA_EXTRACTOR;
+		final BoilerpipeExtractor extractor = CommonExtractors.CANOLA_EXTRACTOR;
 //		final BoilerpipeExtractor extractor = CommonExtractors.LARGEST_CONTENT_EXTRACTOR;
 		final ImageExtractor ie = ImageExtractor.INSTANCE;
 		
